@@ -1,4 +1,5 @@
 #include "dvr.h"
+#include "utils.h"
 
 #include "unistd.h"
 
@@ -14,6 +15,7 @@
 
 namespace
 {
+
   void CALLBACK g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser)
   {
     std::cerr << "Got some exception: " << dwType << " for user: " << lUserID << " and handle: " << lHandle << std::endl;
@@ -21,7 +23,7 @@ namespace
 
   void CALLBACK g_RealDataCallBack_V30(LONG lRealHandle, DWORD dwDataType, BYTE *pBuffer, DWORD dwBufSize, void* dwUser)
   {
-    std::cout << "Got " << dwBufSize << " bytes: handle = " << lRealHandle << ", type = " << dwDataType << std::endl;
+    //    std::cout << "Got " << dwBufSize << " bytes: handle = " << lRealHandle << ", type = " << dwDataType << std::endl;
     std::ofstream * out = static_cast<std::ofstream *>(dwUser);
 
     if (dwDataType == NET_DVR_STREAMDATA)
@@ -54,10 +56,6 @@ namespace ASI
       error("Login error");
     }
 
-    const int firstChannel = myDeviceInfo.struDeviceV30.byStartDChan;
-    const int numberOfChannels = myDeviceInfo.struDeviceV30.byIPChanNum + myDeviceInfo.struDeviceV30.byHighDChanNum * 256;
-    std::cout << "First digital channel: " << firstChannel << std::endl;
-    std::cout << "Number of digital channels: " << numberOfChannels << std::endl;
   }
 
   NET_DVR::~NET_DVR()
@@ -68,6 +66,14 @@ namespace ASI
     {
       debug("NET_DVR_Logout");
     }
+  }
+
+  void NET_DVR::info() const
+  {
+    const int firstChannel = myDeviceInfo.struDeviceV30.byStartDChan;
+    const int numberOfChannels = myDeviceInfo.struDeviceV30.byIPChanNum + myDeviceInfo.struDeviceV30.byHighDChanNum * 256;
+    std::cout << "First digital channel: " << firstChannel << std::endl;
+    std::cout << "Number of digital channels: " << numberOfChannels << std::endl;
   }
 
   [[ noreturn ]] void NET_DVR::error(const char * msg) const
@@ -100,7 +106,7 @@ namespace ASI
   {
     const LONG dChannel = myDeviceInfo.struDeviceV30.byStartDChan + channel;
 #if 1
-    const BOOL ok = NET_DVR_CaptureJPEGPicture(myUserID, dChannel, &parameters, cast(filename.c_str()));
+    const BOOL ok = NET_DVR_CaptureJPEGPicture(myUserID, dChannel, &parameters, cast(filename));
 #else
     std::vector<char> buffer(100000);
     DWORD size = 0;
@@ -117,28 +123,28 @@ namespace ASI
     }
   }
 
-  void NET_DVR::downloadFiles(const LONG channel, const std::string & filename) const
+  void NET_DVR::downloadFiles(const LONG channel, const std::tm & start, const std::tm & end, const std::string & filename) const
   {
     const LONG dChannel = myDeviceInfo.struDeviceV30.byStartDChan + channel;
 
     NET_DVR_PLAYCOND downloadCond = {};
     downloadCond.dwChannel = dChannel;
-    
-    downloadCond.struStartTime.dwYear   = 2020;
-    downloadCond.struStartTime.dwMonth  = 6;
-    downloadCond.struStartTime.dwDay    = 1;
-    downloadCond.struStartTime.dwHour   = 9;
-    downloadCond.struStartTime.dwMinute = 50;
-    downloadCond.struStartTime.dwSecond = 0;
-    downloadCond.struStopTime.dwYear    = 2020;
-    downloadCond.struStopTime.dwMonth   = 6;
-    downloadCond.struStopTime.dwDay     = 1;
-    downloadCond.struStopTime.dwHour    = 9;
-    downloadCond.struStopTime.dwMinute  = 59;
-    downloadCond.struStopTime.dwSecond  = 0;
-    
-    const LONG hPlayback = NET_DVR_GetFileByTime_V40(myUserID, cast(filename.c_str()), &downloadCond);
-    
+
+    downloadCond.struStartTime.dwYear   = 1900 + start.tm_year;
+    downloadCond.struStartTime.dwMonth  = 1 + start.tm_mon;
+    downloadCond.struStartTime.dwDay    = start.tm_mday;
+    downloadCond.struStartTime.dwHour   = start.tm_hour;
+    downloadCond.struStartTime.dwMinute = start.tm_min;
+    downloadCond.struStartTime.dwSecond = start.tm_sec;
+    downloadCond.struStopTime.dwYear    = 1900 + end.tm_year;
+    downloadCond.struStopTime.dwMonth   = 1 + end.tm_mon;
+    downloadCond.struStopTime.dwDay     = end.tm_mday;
+    downloadCond.struStopTime.dwHour    = end.tm_hour;
+    downloadCond.struStopTime.dwMinute  = end.tm_min;
+    downloadCond.struStopTime.dwSecond  = end.tm_sec;
+
+    const LONG hPlayback = NET_DVR_GetFileByTime_V40(myUserID, cast(filename), &downloadCond);
+
     if (hPlayback < 0)
     {
         error("NET_DVR_GetFileByTime_V40");
@@ -155,7 +161,7 @@ namespace ASI
         std::cout << "Downloading... " << pos << " %" << std::endl;
         sleep(1);
     }
-    
+
     if (!NET_DVR_StopGetFile(hPlayback))
     {
         error("NET_DVR_StopGetFile");

@@ -5,6 +5,8 @@ project(cctv)
 add_executable(cctv
   main.cpp
   dvr.cpp
+  options.cpp
+  utils.cpp
   )
 
 set(SDK "$ENV{HOME}/projects/cctv/EN-HCNetSDKV6.1.4.42_build20200527_linux64")
@@ -16,9 +18,16 @@ set(SDK_COM "${SDK_LIB}/HCNetSDKCom")
 target_include_directories(cctv PRIVATE ${SDK}/incEn)
 
 find_library(HCNETSDK NAMES hcnetsdk PATHS ${SDK_LIB})
-target_link_libraries(cctv ${HCNETSDK})
+find_package(Boost REQUIRED
+  COMPONENTS program_options
+  )
 
-set_property(TARGET cctv PROPERTY CXX_STANDARD 11)
+target_link_libraries(cctv PRIVATE
+  ${HCNETSDK}
+  Boost::program_options
+  )
+
+target_compile_features(cctv PUBLIC cxx_std_17)
 
 MESSAGE("CMAKE_BUILD_TYPE:                ${CMAKE_BUILD_TYPE}")
 MESSAGE("CMAKE_CXX_FLAGS:                 ${CMAKE_CXX_FLAGS}")

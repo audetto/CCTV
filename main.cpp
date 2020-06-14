@@ -1,32 +1,17 @@
 #include "dvr.h"
 
+#include "options.h"
+#include "utils.h"
+
+#include <boost/program_options.hpp>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 namespace
 {
 
-  std::string getEnvVar(const std::string & var)
-  {
-     const char * val = std::getenv(var.c_str());
-     if (val)
-     {
-         return val;
-     }
-     else
-     {
-         return std::string();
-     }
-  }
-
-  void Demo_SDK_Version()
-  {
-    const DWORD uiVersion = NET_DVR_GetSDKBuildVersion();
-
-    std::cout << "HCNetSDK V" << ((0xff000000 & uiVersion) >> 24) << "." << ((0x00ff0000 & uiVersion) >> 16) << "." << ((0x0000ff00 & uiVersion) >> 8) << "." << (0x000000ff & uiVersion) << std::endl;
-  }
-
-  void capturePictures(ASI::NET_DVR & dvr)
+  void capturePictures(const ASI::NET_DVR & dvr)
   {
     NET_DVR_JPEGPARA strPicPara = {0};
     strPicPara.wPicQuality = 2;
@@ -39,42 +24,80 @@ namespace
     }
   }
 
-  void downloadFiles(ASI::NET_DVR & dvr)
+  void downloadFiles(const ASI::NET_DVR & dvr, const ASI::ProgramOptions & options)
   {
-    dvr.downloadFiles(0, "/tmp/test.mp4");
+    const std::tm start = ASI::parseDateTime(options.start);
+    const std::tm end = ASI::parseDateTime(options.end);
+
+    for (const size_t channel: options.channels)
+    {
+      const std::string filename = ASI::getFilename(options.folder, channel, start);
+      dvr.downloadFiles(channel, start, end, filename);
+      std::cout << "Video written to " << filename << std::endl;
+    }
   }
 
-  void live(ASI::NET_DVR & dvr)
+  void live(const ASI::NET_DVR & dvr, const ASI::ProgramOptions & options)
   {
-    dvr.liveStream(0, 5, "/tmp/live.mp4");
+    for (const size_t channel: options.channels)
+    {
+      const std::string filename = ASI::getLiveFilename(options.folder, channel);
+      dvr.liveStream(channel, options.duration, filename);
+      std::cout << "Video written to " << filename << std::endl;
+    }
   }
 
-  int cctv()
+  void info(ASI::NET_DVR & dvr)
   {
-    ASI::NET_SDK sdk;
+    const DWORD uiVersion = NET_DVR_GetSDKBuildVersion();
 
-    Demo_SDK_Version();
-    NET_DVR_SetLogToFile(5, ASI::cast("/tmp/sdkLog"));
+    std::cout << "HCNetSDK V" << ((0xff000000 & uiVersion) >> 24) << "." << ((0x00ff0000 & uiVersion) >> 16) << "." << ((0x0000ff00 & uiVersion) >> 8) << "." << (0x000000ff & uiVersion) << std::endl;
 
-    ASI::NET_DVR dvr("192.168.0.20", 8000, getEnvVar("HK_USERNAME"), getEnvVar("HK_PASSWORD"));
+    dvr.info();
+  }
 
-    // capturePictures(dvr);
-    // downloadFiles(dvr);
-    live(dvr);
+  int cctv(int argc, char ** argv)
+  {
+    ASI::ProgramOptions options;
+    const bool run = ASI::getProgramOptions(argc, argv, options);
 
+    if (run)
+    {
+      ASI::NET_SDK sdk;
+
+      if (!options.logfile.empty())
+      {
+	NET_DVR_SetLogToFile(options.loglevel, ASI::cast(options.logfile));
+      }
+
+      ASI::NET_DVR dvr("192.168.0.20", 8000, ASI::getEnvVar("HK_USERNAME"), ASI::getEnvVar("HK_PASSWORD"));
+
+      switch (options.target) {
+      case ASI::Live:
+	live(dvr, options);
+	break;
+      case ASI::Replay:
+	downloadFiles(dvr, options);
+	break;
+      default:
+	info(dvr);
+	break;
+      };
+    }
     return 0;
   }
 
 }
 
-int main()
+int main(int argc, char ** argv)
 {
   try
   {
-    cctv();
+    return cctv(argc, argv);
   }
   catch (const std::exception & e)
   {
     std::cerr << e.what() << std::endl;
+    return 1;
   }
 }

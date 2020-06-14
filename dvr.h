@@ -3,15 +3,10 @@
 #include "HCNetSDK.h"
 
 #include <string>
+#include <ctime>
 
 namespace ASI
 {
-
-  template <typename T>
-  T * cast(const T * c)
-  {
-    return const_cast<T*>(c);
-  }
 
   class NET_SDK
   {
@@ -28,8 +23,10 @@ namespace ASI
 
     const NET_DVR_DEVICEINFO_V40 & getDeviceInfo() const;
 
+    void info() const;
+
     void capturePicture(const LONG channel, NET_DVR_JPEGPARA & parameters, const std::string & filename) const;
-    void downloadFiles(const LONG channel, const std::string & filename) const;
+    void downloadFiles(const LONG channel, const std::tm & start, const std::tm & end, const std::string & filename) const;
     void liveStream(const LONG channel, const int seconds, const std::string & filename) const;
 
     ~NET_DVR();
