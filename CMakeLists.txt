@@ -9,7 +9,7 @@ add_executable(cctv
   utils.cpp
   )
 
-set(SDK "$ENV{HOME}/projects/cctv/EN-HCNetSDKV6.1.4.42_build20200527_linux64")
+set(SDK "$ENV{HOME}/projects/cctv/sdk")
 
 set(SDK_INC "${SDK}/incEn")
 set(SDK_LIB "${SDK}/lib")
