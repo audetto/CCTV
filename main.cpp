@@ -15,7 +15,7 @@ namespace
   {
     for (const size_t channel: options.channels)
     {
-      const std::string filename = ASI::getPictureFilename(options.folder, channel, "jpeg");
+      const std::string filename = ASI::getPictureFilename(options.folder, ".jpeg", channel);
       dvr.capturePicture(channel, filename);
       std::cout << "Picture written to " << filename << std::endl;
     }
@@ -28,7 +28,7 @@ namespace
 
     for (const size_t channel: options.channels)
     {
-      const std::string filename = ASI::getFilename(options.folder, channel, start);
+      const std::string filename = ASI::getFilename(options.folder, ".mp4", channel, start);
       dvr.downloadFiles(channel, start, end, filename);
       std::cout << "Video written to " << filename << std::endl;
     }
@@ -38,7 +38,7 @@ namespace
   {
     for (const size_t channel: options.channels)
     {
-      const std::string filename = ASI::getLiveFilename(options.folder, channel);
+      const std::string filename = ASI::getLiveFilename(options.folder, ".dat", channel);
       dvr.liveStream(channel, options.duration, filename);
       std::cout << "Video written to " << filename << std::endl;
     }

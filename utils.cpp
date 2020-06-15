@@ -23,38 +23,38 @@ namespace ASI
     return t;
   }
 
-  std::string getFilename(const std::string & folder, const size_t channel, const std::tm & date)
+  std::string getFilename(const std::string & folder, const std::string & ext, const size_t channel, const std::tm & date)
   {
     const std::filesystem::path rootPath(folder);
 
     std::stringstream filename;
     filename << "CCTV_" << channel << "_";
     filename << std::put_time(&date, "%Y-%m-%d_%H_%M");
-    filename << ".mp4";
+    filename << ext;
 
     const std::filesystem::path filePath = rootPath / filename.str();
     const std::string result = filePath;
     return filePath;
   }
 
-  std::string getLiveFilename(const std::string & folder, const size_t channel)
+  std::string getLiveFilename(const std::string & folder, const std::string & ext, const size_t channel)
   {
     const std::filesystem::path rootPath(folder);
 
     std::stringstream filename;
-    filename << "CCTV_" << channel << "_live.mp4";
+    filename << "CCTV_" << channel << "_live" << ext;
 
     const std::filesystem::path filePath = rootPath / filename.str();
     const std::string result = filePath;
     return filePath;
   }
 
-  std::string getPictureFilename(const std::string & folder, const size_t channel, const std::string & ext)
+  std::string getPictureFilename(const std::string & folder, const std::string & ext, const size_t channel)
   {
     const std::filesystem::path rootPath(folder);
 
     std::stringstream filename;
-    filename << "CCTV_" << channel << "." << ext;
+    filename << "CCTV_" << channel << ext;
 
     const std::filesystem::path filePath = rootPath / filename.str();
     const std::string result = filePath;
