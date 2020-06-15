@@ -26,10 +26,15 @@ namespace
     //    std::cout << "Got " << dwBufSize << " bytes: handle = " << lRealHandle << ", type = " << dwDataType << std::endl;
     std::ofstream * out = static_cast<std::ofstream *>(dwUser);
 
-    if (dwDataType == NET_DVR_STREAMDATA)
+    switch (dwDataType)
     {
-      const char * buf = reinterpret_cast<char *>(pBuffer);
-      out->write(buf, dwBufSize);
+    case NET_DVR_STREAMDATA:
+    case NET_DVR_SYSHEAD:
+      {
+	const char * buf = reinterpret_cast<char *>(pBuffer);
+	out->write(buf, dwBufSize);
+	break;
+      }
     }
   }
 
@@ -84,7 +89,6 @@ namespace ASI
     ss << msg << ": " << err;
     ss << " = " << NET_DVR_GetErrorMsg(&err);
     throw std::runtime_error(ss.str());
-    // std::cerr << ss.str() << std::endl;
   }
 
   void NET_DVR::debug(const char * msg) const
@@ -105,21 +109,11 @@ namespace ASI
   void NET_DVR::capturePicture(LONG channel, NET_DVR_JPEGPARA & parameters, const std::string & filename) const
   {
     const LONG dChannel = myDeviceInfo.struDeviceV30.byStartDChan + channel;
-#if 1
     const BOOL ok = NET_DVR_CaptureJPEGPicture(myUserID, dChannel, &parameters, cast(filename));
-#else
-    std::vector<char> buffer(100000);
-    DWORD size = 0;
-    const BOOL ok = NET_DVR_CaptureJPEGPicture_NEW(myUserID, dChannel, &parameters, buffer.data(), buffer.size(), &size);
-#endif
 
     if (!ok)
     {
       error("NET_DVR_CaptureJPEGPicture");
-    }
-    else
-    {
-      std::cout << channel << " to " << filename << std::endl;
     }
   }
 
@@ -166,8 +160,6 @@ namespace ASI
     {
         error("NET_DVR_StopGetFile");
     }
-
-    std::cout << "Downloaded... " << pos << " %" << std::endl;
   }
 
   void NET_DVR::liveStream(const LONG channel, const int seconds, const std::string & filename) const

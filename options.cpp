@@ -69,6 +69,12 @@ namespace ASI
       ("replay:out", po::value<std::string>(), "Output folder");
     desc.add(replayDesc);
 
+    po::options_description picDesc("Pictures");
+    picDesc.add_options()
+      ("pictures,p", "Capture pictures")
+      ("pictures:out", po::value<std::string>(), "Output folder");
+    desc.add(picDesc);
+
     po::variables_map vm;
     try
     {
@@ -100,6 +106,11 @@ namespace ASI
 	options.start = get<std::string>(vm, "replay:start");
 	options.end = get<std::string>(vm, "replay:end");
 	options.folder = get<std::string>(vm, "replay:out");
+      }
+      else if (vm.count("pictures"))
+      {
+	options.target = Pictures;
+	options.folder = get<std::string>(vm, "pictures:out");
       }
 
       return true;

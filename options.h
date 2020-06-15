@@ -8,6 +8,7 @@ namespace ASI
     {
      Info,
      Live,
+     Pictures,
      Replay
     };
 

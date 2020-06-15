@@ -11,16 +11,17 @@
 namespace
 {
 
-  void capturePictures(const ASI::NET_DVR & dvr)
+  void capturePictures(const ASI::NET_DVR & dvr, const ASI::ProgramOptions & options)
   {
     NET_DVR_JPEGPARA strPicPara = {0};
+    strPicPara.wPicSize = 0xff;
     strPicPara.wPicQuality = 2;
 
-    for (size_t i = 0; i < 2; ++i)
+    for (const size_t channel: options.channels)
     {
-      std::ostringstream name;
-      name << "channel_" << i << ".jpeg";
-      dvr.capturePicture(i, strPicPara, name.str());
+      const std::string filename = ASI::getPictureFilename(options.folder, channel, "jpeg");
+      dvr.capturePicture(channel, strPicPara, filename);
+      std::cout << "Picture written to " << filename << std::endl;
     }
   }
 
@@ -78,6 +79,9 @@ namespace
 	break;
       case ASI::Replay:
 	downloadFiles(dvr, options);
+	break;
+      case ASI::Pictures:
+	capturePictures(dvr, options);
 	break;
       default:
 	info(dvr);

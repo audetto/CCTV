@@ -49,6 +49,18 @@ namespace ASI
     return filePath;
   }
 
+  std::string getPictureFilename(const std::string & folder, const size_t channel, const std::string & ext)
+  {
+    const std::filesystem::path rootPath(folder);
+
+    std::stringstream filename;
+    filename << "CCTV_" << channel << "." << ext;
+
+    const std::filesystem::path filePath = rootPath / filename.str();
+    const std::string result = filePath;
+    return filePath;
+  }
+
   std::string getEnvVar(const std::string & var)
   {
      const char * val = std::getenv(var.c_str());

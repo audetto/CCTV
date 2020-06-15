@@ -23,5 +23,6 @@ namespace ASI
 
   std::string getFilename(const std::string & folder, const size_t channel, const std::tm & date);
   std::string getLiveFilename(const std::string & folder, const size_t channel);
+  std::string getPictureFilename(const std::string & folder, const size_t channel, const std::string & ext);
 
 }
