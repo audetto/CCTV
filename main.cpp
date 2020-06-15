@@ -13,14 +13,10 @@ namespace
 
   void capturePictures(const ASI::NET_DVR & dvr, const ASI::ProgramOptions & options)
   {
-    NET_DVR_JPEGPARA strPicPara = {0};
-    strPicPara.wPicSize = 0xff;
-    strPicPara.wPicQuality = 2;
-
     for (const size_t channel: options.channels)
     {
       const std::string filename = ASI::getPictureFilename(options.folder, channel, "jpeg");
-      dvr.capturePicture(channel, strPicPara, filename);
+      dvr.capturePicture(channel, filename);
       std::cout << "Picture written to " << filename << std::endl;
     }
   }

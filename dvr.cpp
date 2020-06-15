@@ -106,8 +106,19 @@ namespace ASI
     return myDeviceInfo;
   }
 
-  void NET_DVR::capturePicture(LONG channel, NET_DVR_JPEGPARA & parameters, const std::string & filename) const
+  void NET_DVR::capturePicture(LONG channel, const std::string & filename) const
   {
+    NET_DVR_JPEGPARA parameters = {};
+    /*
+      Apparently supported but not always working
+      AUTO = 0xff
+      CIF  = 0 = 352x240
+      QCIF = 1 = 176x120
+      4CIF = 2 = 704x480
+     */
+    parameters.wPicSize = 0xff;
+    parameters.wPicQuality = 2;
+
     const LONG dChannel = myDeviceInfo.struDeviceV30.byStartDChan + channel;
     const BOOL ok = NET_DVR_CaptureJPEGPicture(myUserID, dChannel, &parameters, cast(filename));
 

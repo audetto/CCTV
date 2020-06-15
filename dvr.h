@@ -25,7 +25,7 @@ namespace ASI
 
     void info() const;
 
-    void capturePicture(const LONG channel, NET_DVR_JPEGPARA & parameters, const std::string & filename) const;
+    void capturePicture(const LONG channel, const std::string & filename) const;
     void downloadFiles(const LONG channel, const std::tm & start, const std::tm & end, const std::string & filename) const;
     void liveStream(const LONG channel, const int seconds, const std::string & filename) const;
 
