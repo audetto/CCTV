@@ -160,12 +160,14 @@ namespace ASI
       error("NET_DVR_PlayBackControl_V40");
     }
 
+    std::cout << std::endl;
     LONG pos = 0;
     for (pos = 0; pos < 100 && pos >= 0; pos = NET_DVR_GetDownloadPos(hPlayback))
     {
-      std::cout << "Downloading... " << pos << " %" << std::endl;
-      sleep(1);
+      std::cout << "\rDownloading... " << pos << " %" << std::flush;
+      usleep(1000 * 200);
     }
+    std::cout << std::endl;
 
     if (!NET_DVR_StopGetFile(hPlayback))
     {
