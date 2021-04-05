@@ -14,7 +14,7 @@ namespace ASI
     std::istringstream ss(s);
 
     std::tm t = {};
-    ss >> std::get_time(&t, "%Y-%m-%d %H:%M:%S");
+    ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
     if (ss.fail())
     {
       throw std::runtime_error("Failed to parse " + s + " as time");

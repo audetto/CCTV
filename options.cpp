@@ -64,8 +64,8 @@ namespace ASI
     po::options_description replayDesc("Replay");
     replayDesc.add_options()
       ("replay,r", "Replay")
-      ("replay:start", po::value<std::string>(), "Start replay time (%Y-%m-%d %H:%M:%S)")
-      ("replay:end", po::value<std::string>(), "End replay time (%Y-%m-%d %H:%M:%S)")
+      ("replay:start", po::value<std::string>(), "Start replay time (%Y-%m-%dT%H:%M:%S)")
+      ("replay:end", po::value<std::string>(), "End replay time (%Y-%m-%dT%H:%M:%S)")
       ("replay:out", po::value<std::string>(), "Output folder");
     desc.add(replayDesc);
 
