@@ -31,9 +31,9 @@ namespace
     case NET_DVR_STREAMDATA:
     case NET_DVR_SYSHEAD:
       {
-	const char * buf = reinterpret_cast<char *>(pBuffer);
-	out->write(buf, dwBufSize);
-	break;
+        const char * buf = reinterpret_cast<char *>(pBuffer);
+        out->write(buf, dwBufSize);
+        break;
       }
     }
   }
@@ -115,7 +115,7 @@ namespace ASI
       CIF  = 0 = 352x240
       QCIF = 1 = 176x120
       4CIF = 2 = 704x480
-     */
+    */
     parameters.wPicSize = 0xff;
     parameters.wPicQuality = 2;
 
@@ -152,24 +152,24 @@ namespace ASI
 
     if (hPlayback < 0)
     {
-        error("NET_DVR_GetFileByTime_V40");
+      error("NET_DVR_GetFileByTime_V40");
     }
 
     if (!NET_DVR_PlayBackControl_V40(hPlayback, NET_DVR_PLAYSTART, NULL, 0, NULL, NULL))
     {
-        error("NET_DVR_PlayBackControl_V40");
+      error("NET_DVR_PlayBackControl_V40");
     }
 
     LONG pos = 0;
     for (pos = 0; pos < 100 && pos >= 0; pos = NET_DVR_GetDownloadPos(hPlayback))
     {
-        std::cout << "Downloading... " << pos << " %" << std::endl;
-        sleep(1);
+      std::cout << "Downloading... " << pos << " %" << std::endl;
+      sleep(1);
     }
 
     if (!NET_DVR_StopGetFile(hPlayback))
     {
-        error("NET_DVR_StopGetFile");
+      error("NET_DVR_StopGetFile");
     }
   }
 
@@ -189,7 +189,7 @@ namespace ASI
     const LONG realPlayHandle = NET_DVR_RealPlay_V40(myUserID, &struPlayInfo, g_RealDataCallBack_V30, &out);
     if (realPlayHandle < 0)
     {
-        error("NET_DVR_RealPlay_V40");
+      error("NET_DVR_RealPlay_V40");
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(seconds));

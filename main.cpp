@@ -64,24 +64,24 @@ namespace
 
       if (!options.logfile.empty())
       {
-	NET_DVR_SetLogToFile(options.loglevel, ASI::cast(options.logfile));
+        NET_DVR_SetLogToFile(options.loglevel, ASI::cast(options.logfile));
       }
 
       ASI::NET_DVR dvr("192.168.0.20", 8000, ASI::getEnvVar("HK_USERNAME"), ASI::getEnvVar("HK_PASSWORD"));
 
       switch (options.target) {
       case ASI::Live:
-	live(dvr, options);
-	break;
+        live(dvr, options);
+        break;
       case ASI::Replay:
-	downloadFiles(dvr, options);
-	break;
+        downloadFiles(dvr, options);
+        break;
       case ASI::Pictures:
-	capturePictures(dvr, options);
-	break;
+        capturePictures(dvr, options);
+        break;
       default:
-	info(dvr);
-	break;
+        info(dvr);
+        break;
       };
     }
     return 0;

@@ -82,8 +82,8 @@ namespace ASI
 
       if (vm.count("help"))
       {
-	std::cout << "ASI CCTV" << std::endl << std::endl << desc << std::endl;
-	return false;
+        std::cout << "ASI CCTV" << std::endl << std::endl << desc << std::endl;
+        return false;
       }
 
       options.channels = parseChannels(get<std::string>(vm, "channels"));
@@ -92,25 +92,25 @@ namespace ASI
 
       if (vm.count("info"))
       {
-	options.target = Info;
+        options.target = Info;
       }
       else if (vm.count("live"))
       {
-	options.target = Live;
-	options.folder = get<std::string>(vm, "live:out");
-	options.duration = get<size_t>(vm, "live:duration");
+        options.target = Live;
+        options.folder = get<std::string>(vm, "live:out");
+        options.duration = get<size_t>(vm, "live:duration");
       }
       else if (vm.count("replay"))
       {
-	options.target = Replay;
-	options.start = get<std::string>(vm, "replay:start");
-	options.end = get<std::string>(vm, "replay:end");
-	options.folder = get<std::string>(vm, "replay:out");
+        options.target = Replay;
+        options.start = get<std::string>(vm, "replay:start");
+        options.end = get<std::string>(vm, "replay:end");
+        options.folder = get<std::string>(vm, "replay:out");
       }
       else if (vm.count("pictures"))
       {
-	options.target = Pictures;
-	options.folder = get<std::string>(vm, "pictures:out");
+        options.target = Pictures;
+        options.folder = get<std::string>(vm, "pictures:out");
       }
 
       return true;
